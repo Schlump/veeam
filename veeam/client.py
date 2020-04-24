@@ -50,7 +50,18 @@ class VeeamClient(object):
             }
         )
         self.session.verify = verify
-
+        
+    def __get_job_from_jobstats(self, job_stats):
+        '''
+        Return BackupJobSessions from reponse, if something
+        goes wrong return reponse message
+        '''
+        try:
+            jobs = job_stats.json()['Entities']['BackupJobSessions']['BackupJobSessions']
+        except KeyError:
+            return jobs
+        return jobs
+    
     def get_repo_summary(self):
         '''
         Get the summary of repo's
@@ -176,7 +187,7 @@ class VeeamClient(object):
                 self.url, yesterday_rep)
         )
         
-        jobs = job_stats.json()['Entities']['BackupJobSessions']['BackupJobSessions']
+        jobs = self.__get_job_from_jobstats(job_stats)
         
         all_jobs = []
         
@@ -195,7 +206,7 @@ class VeeamClient(object):
             '{}/query?type=BackupJobSession&format=entities&filter=result=="Failed";creationtime>"{}"'.format(
                 self.url, yesterday_rep)
         )
-        jobs = job_stats.json()['Entities']['BackupJobSessions']['BackupJobSessions']
+        jobs = self.__get_job_from_jobstats(job_stats)
 
         return jobs
     
@@ -209,7 +220,7 @@ class VeeamClient(object):
                 self.url, jobname, since)
         )
         
-        jobs = job_stats.json()['Entities']['BackupJobSessions']['BackupJobSessions']
+        jobs = self.__get_job_from_jobstats(job_stats)
 
         return jobs
     
