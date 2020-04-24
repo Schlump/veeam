@@ -59,7 +59,7 @@ class VeeamClient(object):
         try:
             jobs = job_stats.json()['Entities']['BackupJobSessions']['BackupJobSessions']
         except KeyError:
-            return jobs
+            return job_stats
         return jobs
     
     def get_repo_summary(self):
